@@ -1,0 +1,26 @@
+name: wrenim-ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  wrenim-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        nim: ["2.2.8"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Nim
+        uses: jiro4989/setup-nim-action@v2
+        with:
+          nim-version: ${{ matrix.nim }}
+      - name: Nimble refresh
+        run: nimble refresh -y
+      - name: Run tests
+        run: nimble test -y
+      - name: Run doctor
+        run: nimble doctor -y

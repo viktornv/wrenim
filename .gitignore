@@ -1,0 +1,26 @@
+# Nim build artifacts
+nimcache/
+nimblecache/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Nim package lock
+nimble.develop
+nimble.paths
+
+# Old Wren source cache (no longer used)
+.wrenim-cache/
+
+# OS files
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
