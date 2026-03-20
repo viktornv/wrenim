@@ -23,10 +23,9 @@ Nim wrapper for [Wren](https://wren.io) VM with vendored
 
 ## Install
 
-The library is not published to nimble directory. Install from git:
 
 ```bash
-nimble install https://github.com/viktornv/wrenim
+nimble install wrenim
 ```
 
 For local development from a cloned repository:
