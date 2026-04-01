@@ -4,7 +4,7 @@ import ../src/wrenim
 proc riskyProc() =
   raise newException(ValueError, "something went wrong in Nim")
 
-when isMainModule:
+proc main() =
   let engine = newWrenim()
   defer: engine.dispose()
 
@@ -48,3 +48,6 @@ when isMainModule:
 Nim.risky()""")
   echo "  rc: ", rc
   echo "  error: ", engine.lastError().message
+
+when isMainModule:
+  main()

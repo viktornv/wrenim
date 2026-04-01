@@ -3,7 +3,7 @@ import ../src/wrenim
 proc greeting(): string = "hello from instance"
 proc magic(): int = 42
 
-when isMainModule:
+proc main() =
   let engine = newWrenim()
   defer: engine.dispose()
 
@@ -24,3 +24,6 @@ when isMainModule:
 var w = Widget.new()
 System.print("greet: %(w.greet())")
 System.print("magic: %(w.magic())")""")
+
+when isMainModule:
+  main()

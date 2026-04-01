@@ -10,7 +10,7 @@ proc add2(a, b: int): int = a + b
 proc inc1(a: int): int = a + 1
 proc getVal(): int = 99
 
-when isMainModule:
+proc main() =
   let engine = newWrenim()
   defer: engine.dispose()
 
@@ -56,3 +56,6 @@ System.print("Red=%(Palette.Red)")
 System.print("Blue=%(Palette.Blue)")
 System.print("low=%(Palette.low)")
 System.print("high=%(Palette.high)")""")
+
+when isMainModule:
+  main()

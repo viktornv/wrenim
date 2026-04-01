@@ -1,6 +1,6 @@
 import ../src/wrenim
 
-when isMainModule:
+proc main() =
   let engine = newWrenim()
   defer: engine.dispose()
 
@@ -45,3 +45,6 @@ var DoublerClass = Doubler""")
   engine.release(callbackRef)
   engine.release(doublerClassRef)
   echo "isNil after release: ", callbackRef.isNil
+
+when isMainModule:
+  main()

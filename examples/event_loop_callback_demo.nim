@@ -1,6 +1,6 @@
 import ../src/wrenim
 
-when isMainModule:
+proc main() =
   let engine = newWrenim()
   defer: engine.dispose()
 
@@ -25,3 +25,6 @@ Engine.onTick = Fn.new {
     engine.invokeCallback(onTickCb)
 
   engine.release(onTickCb)
+
+when isMainModule:
+  main()

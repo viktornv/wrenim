@@ -198,7 +198,7 @@ proc defaultForeignAllocate(vm: WrenVm) {.cdecl.} =
 proc defaultConfig*(): WrenConfig =
   let cfg = ffi.defaultConfig()
 
-  cfg.writeFn = proc(vm: WrenVm; text: cstring) {.cdecl.} =
+  cfg.writeFn = cast[ffi.WrenWriteFn](proc(vm: WrenVm; text: cstring) {.cdecl.} =
     let key = vmKey(vm)
     if writeCallbacks.hasKey(key):
       let payload = if text == nil: "" else: $text
@@ -206,8 +206,9 @@ proc defaultConfig*(): WrenConfig =
         writeCallbacks[key](payload)
       except CatchableError as e:
         setCallbackError(key, "write callback error: " & e.msg)
+  )
 
-  cfg.resolveModuleFn = proc(vm: WrenVm; importer, name: cstring): cstring {.cdecl.} =
+  cfg.resolveModuleFn = cast[ffi.WrenResolveModuleFn](proc(vm: WrenVm; importer, name: cstring): cstring {.cdecl.} =
     let key = vmKey(vm)
     let importerName = if importer == nil: "" else: $importer
     var modName = if name == nil: "" else: $name
@@ -219,8 +220,9 @@ proc defaultConfig*(): WrenConfig =
       except CatchableError as e:
         setCallbackError(key, "resolve callback error: " & e.msg)
     allocOwnedCString(modName)
+  )
 
-  cfg.loadModuleFn = proc(vm: WrenVm; name: cstring): ffi.WrenLoadModuleResult {.cdecl.} =
+  cfg.loadModuleFn = cast[ffi.WrenLoadModuleFn](proc(vm: WrenVm; name: cstring): ffi.WrenLoadModuleResult {.cdecl.} =
     let key = vmKey(vm)
     let modName = if name == nil: "" else: $name
 
@@ -243,6 +245,7 @@ proc defaultConfig*(): WrenConfig =
       onComplete: nil,
       userData: nil
     )
+  )
 
   cfg.bindForeignMethodFn = proc(
     vm: WrenVm;

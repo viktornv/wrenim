@@ -7,7 +7,7 @@ proc greet(): string = "hi from nim"
 proc double(x: float): float = x * 2.0
 proc negate(b: bool): bool = not b
 
-when isMainModule:
+proc main() =
   let engine = newWrenim()
   defer: engine.dispose()
 
@@ -44,3 +44,6 @@ var answer = 42""")
   echo "null test=", call[bool](engine, "main", "Api", "isNil(_)", [argNull()])
 
   echo fm.render()
+
+when isMainModule:
+  main()

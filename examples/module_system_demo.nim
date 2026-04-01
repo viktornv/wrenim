@@ -1,6 +1,6 @@
 import ../src/wrenim
 
-when isMainModule:
+proc main() =
   let engine = newWrenim()
   defer: engine.dispose()
 
@@ -40,3 +40,6 @@ System.print("double=%(Utils.double(21))")""")
 import "math" for MathLib
 System.print("pi=%(MathLib.pi)")
 System.print("add=%(MathLib.add(3, 4))")""")
+
+when isMainModule:
+  main()

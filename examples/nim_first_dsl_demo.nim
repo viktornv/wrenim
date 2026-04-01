@@ -4,7 +4,7 @@ proc hello() = discard
 proc add2(a, b: int): int = a + b
 proc add3(a, b, c: int): int = a + b + c
 
-when isMainModule:
+proc main() =
   let engine = newWrenim()
   defer: engine.dispose()
 
@@ -19,3 +19,6 @@ when isMainModule:
 System.print(Math.add(20, 22))
 System.print(Math.add3(1, 2, 3))
 Nim.hello()""")
+
+when isMainModule:
+  main()

@@ -12,7 +12,7 @@ type
 proc actorName(): string = "actor-name"
 proc actorMake(): string = "maker"
 
-when isMainModule:
+proc main() =
   let engine = newWrenim()
   defer: engine.dispose()
 
@@ -43,3 +43,6 @@ System.print("make=%(Actor.make())")
 var a = Actor.new()
 System.print("name=%(a.name())")
 System.print("label=%(a.label)")""")
+
+when isMainModule:
+  main()
