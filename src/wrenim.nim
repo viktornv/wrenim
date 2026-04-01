@@ -138,7 +138,7 @@ proc raiseExecError(engine: Wrenim; rc: InterpretResult; prefix: string; fallbac
 proc cMalloc(size: csize_t): pointer {.importc: "malloc", header: "<stdlib.h>".}
 proc cMemcpy(dest, src: pointer; n: csize_t): pointer {.importc: "memcpy", header: "<string.h>".}
 
-proc allocOwnedCString(text: string): cstring =
+proc allocOwnedCString(text: string): ffi.ConstCString =
   ## Allocates a C string via malloc. Wren's resolveModuleFn contract requires
   ## the returned pointer to be malloc'd; Wren calls free() on it internally.
   let size = text.len + 1
@@ -148,7 +148,7 @@ proc allocOwnedCString(text: string): cstring =
   if text.len > 0:
     discard cMemcpy(mem, unsafeAddr text[0], csize_t(text.len))
   cast[ptr UncheckedArray[char]](mem)[text.len] = '\0'
-  cast[cstring](mem)
+  cast[ffi.ConstCString](mem)
 
 proc setCallbackError(key: uint; msg: string) =
   lastErrors[key] = RuntimeErrorInfo(
@@ -198,7 +198,7 @@ proc defaultForeignAllocate(vm: WrenVm) {.cdecl.} =
 proc defaultConfig*(): WrenConfig =
   let cfg = ffi.defaultConfig()
 
-  cfg.writeFn = cast[ffi.WrenWriteFn](proc(vm: WrenVm; text: cstring) {.cdecl.} =
+  cfg.writeFn = cast[ffi.WrenWriteFn](proc(vm: WrenVm; text: ffi.ConstCString) {.cdecl.} =
     let key = vmKey(vm)
     if writeCallbacks.hasKey(key):
       let payload = if text == nil: "" else: $text
@@ -208,7 +208,7 @@ proc defaultConfig*(): WrenConfig =
         setCallbackError(key, "write callback error: " & e.msg)
   )
 
-  cfg.resolveModuleFn = cast[ffi.WrenResolveModuleFn](proc(vm: WrenVm; importer, name: cstring): cstring {.cdecl.} =
+  cfg.resolveModuleFn = cast[ffi.WrenResolveModuleFn](proc(vm: WrenVm; importer, name: ffi.ConstCString): ffi.ConstCString {.cdecl.} =
     let key = vmKey(vm)
     let importerName = if importer == nil: "" else: $importer
     var modName = if name == nil: "" else: $name
@@ -222,7 +222,7 @@ proc defaultConfig*(): WrenConfig =
     allocOwnedCString(modName)
   )
 
-  cfg.loadModuleFn = cast[ffi.WrenLoadModuleFn](proc(vm: WrenVm; name: cstring): ffi.WrenLoadModuleResult {.cdecl.} =
+  cfg.loadModuleFn = cast[ffi.WrenLoadModuleFn](proc(vm: WrenVm; name: ffi.ConstCString): ffi.WrenLoadModuleResult {.cdecl.} =
     let key = vmKey(vm)
     let modName = if name == nil: "" else: $name
 
@@ -249,9 +249,9 @@ proc defaultConfig*(): WrenConfig =
 
   cfg.bindForeignMethodFn = proc(
     vm: WrenVm;
-    module, className: cstring;
+    module, className: ffi.ConstCString;
     isStatic: bool;
-    signature: cstring
+    signature: ffi.ConstCString
   ): ForeignMethodFn {.cdecl.} =
     let key = vmKey(vm)
     if not foreignMethodTables.hasKey(key):
@@ -267,7 +267,7 @@ proc defaultConfig*(): WrenConfig =
       isStatic
     )
 
-  cfg.bindForeignClassFn = proc(vm: WrenVm; module, className: cstring): ffi.WrenForeignClassMethods {.cdecl.} =
+  cfg.bindForeignClassFn = proc(vm: WrenVm; module, className: ffi.ConstCString): ffi.WrenForeignClassMethods {.cdecl.} =
     discard vm
     discard module
     discard className
@@ -276,7 +276,7 @@ proc defaultConfig*(): WrenConfig =
       finalize: nil
     )
 
-  cfg.errorFn = proc(vm: WrenVm; errorType: ffi.WrenErrorType; module: cstring; line: cint; message: cstring) {.cdecl.} =
+  cfg.errorFn = proc(vm: WrenVm; errorType: ffi.WrenErrorType; module: ffi.ConstCString; line: cint; message: ffi.ConstCString) {.cdecl.} =
     let key = vmKey(vm)
     let modName = if module == nil: "" else: $module
     let msg = if message == nil: "" else: $message

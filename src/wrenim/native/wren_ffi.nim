@@ -16,6 +16,8 @@ import ./wren_source
 {.compile: wrenOptionalDir / "wren_opt_random.c".}
 
 type
+  ConstCString* {.importc: "const char*", nodecl.} = cstring
+
   WrenVM* {.importc: "WrenVM", header: "wren.h", bycopy.} = object
   WrenHandle* {.importc: "WrenHandle", header: "wren.h", bycopy.} = object
 
@@ -40,24 +42,24 @@ type
     WREN_TYPE_UNKNOWN
 
   WrenLoadModuleResult* {.importc: "WrenLoadModuleResult", header: "wren.h", bycopy.} = object
-    source*: cstring
+    source*: ConstCString
     onComplete*: pointer
     userData*: pointer
 
   WrenReallocateFn* = proc(memory: pointer; newSize: csize_t; userData: pointer): pointer {.cdecl.}
   WrenForeignMethodFn* = proc(vm: ptr WrenVM) {.cdecl.}
   WrenFinalizerFn* = proc(data: pointer) {.cdecl.}
-  WrenResolveModuleFn* = proc(vm: ptr WrenVM; importer, name: cstring): cstring {.cdecl.}
-  WrenLoadModuleFn* = proc(vm: ptr WrenVM; name: cstring): WrenLoadModuleResult {.cdecl.}
-  WrenBindForeignMethodFn* = proc(vm: ptr WrenVM; module, className: cstring; isStatic: bool; signature: cstring): WrenForeignMethodFn {.cdecl.}
-  WrenWriteFn* = proc(vm: ptr WrenVM; text: cstring) {.cdecl.}
-  WrenErrorFn* = proc(vm: ptr WrenVM; errorType: WrenErrorType; module: cstring; line: cint; message: cstring) {.cdecl.}
+  WrenResolveModuleFn* = proc(vm: ptr WrenVM; importer, name: ConstCString): ConstCString {.cdecl.}
+  WrenLoadModuleFn* = proc(vm: ptr WrenVM; name: ConstCString): WrenLoadModuleResult {.cdecl.}
+  WrenBindForeignMethodFn* = proc(vm: ptr WrenVM; module, className: ConstCString; isStatic: bool; signature: ConstCString): WrenForeignMethodFn {.cdecl.}
+  WrenWriteFn* = proc(vm: ptr WrenVM; text: ConstCString) {.cdecl.}
+  WrenErrorFn* = proc(vm: ptr WrenVM; errorType: WrenErrorType; module: ConstCString; line: cint; message: ConstCString) {.cdecl.}
 
   WrenForeignClassMethods* {.importc: "WrenForeignClassMethods", header: "wren.h", bycopy.} = object
     allocate*: WrenForeignMethodFn
     finalize*: WrenFinalizerFn
 
-  WrenBindForeignClassFn* = proc(vm: ptr WrenVM; module, className: cstring): WrenForeignClassMethods {.cdecl.}
+  WrenBindForeignClassFn* = proc(vm: ptr WrenVM; module, className: ConstCString): WrenForeignClassMethods {.cdecl.}
 
   WrenConfiguration* {.importc: "WrenConfiguration", header: "wren.h", bycopy.} = object
     reallocateFn*: WrenReallocateFn
