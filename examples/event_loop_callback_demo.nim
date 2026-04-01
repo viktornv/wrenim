@@ -6,19 +6,20 @@ proc main() =
 
   engine.onWrite(proc(text: string) = stdout.write(text))
 
-  discard engine.run("""
-var _onTickCallback = null
+  engine.runChecked("""
+var onTickCallback = null
 
-class Engine {
-  static onTick=(fn) { _onTickCallback = fn }
+class TickCallback {
+  construct new() {}
+  call() {
+    System.print("tick from wren")
+  }
 }
 
-Engine.onTick = Fn.new {
-  System.print("tick from wren")
-}
+onTickCallback = TickCallback.new()
 """)
 
-  var onTickCb = getVarRef(engine, "main", "_onTickCallback")
+  var onTickCb = getVarRef(engine, "main", "onTickCallback")
 
   for i in 0 ..< 3:
     echo "host tick=", i
